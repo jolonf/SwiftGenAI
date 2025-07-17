@@ -1,0 +1,127 @@
+
+# Text generation
+
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent" \
+  -H "x-goog-api-key: $GEMINI_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -X POST \
+  -d '{
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "How does AI work?"
+          }
+        ]
+      }
+    ]
+  }'
+  
+  
+  # Thinking with Gemini 2.5
+  
+  curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent" \
+  -H "x-goog-api-key: $GEMINI_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -X POST \
+  -d '{
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "How does AI work?"
+          }
+        ]
+      }
+    ],
+    "generationConfig": {
+      "thinkingConfig": {
+        "thinkingBudget": 0
+      }
+    }
+  }'
+  
+  # System instructions and other configurations
+  
+  curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent" \
+  -H "x-goog-api-key: $GEMINI_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "systemInstruction": {
+      "parts": [
+        {
+          "text": "You are a cat. Your name is Neko."
+        }
+      ]
+    },
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "Hello there"
+          }
+        ]
+      }
+    ]
+  }'
+
+curl https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent \
+  -H "x-goog-api-key: $GEMINI_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -X POST \
+  -d '{
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "Explain how AI works"
+          }
+        ]
+      }
+    ],
+    "generationConfig": {
+      "stopSequences": [
+        "Title"
+      ],
+      "temperature": 1.0,
+      "topP": 0.8,
+      "topK": 10
+    }
+  }'
+  
+  # Multi-turn conversations (Chat)
+  
+  curl https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent \
+  -H "x-goog-api-key: $GEMINI_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -X POST \
+  -d '{
+    "contents": [
+      {
+        "role": "user",
+        "parts": [
+          {
+            "text": "Hello"
+          }
+        ]
+      },
+      {
+        "role": "model",
+        "parts": [
+          {
+            "text": "Great to meet you. What would you like to know?"
+          }
+        ]
+      },
+      {
+        "role": "user",
+        "parts": [
+          {
+            "text": "I have two dogs in my house. How many paws are in my house?"
+          }
+        ]
+      }
+    ]
+  }'
+  
+  

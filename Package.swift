@@ -5,22 +5,29 @@ import PackageDescription
 
 let package = Package(
     name: "swift-genai",
+    platforms: [
+        .macOS(.v10_15),
+        .iOS(.v13),
+        .tvOS(.v13),
+        .watchOS(.v6)
+    ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
-            name: "swift-genai",
-            targets: ["swift-genai"]
+            name: "SwiftGenAI",
+            targets: ["SwiftGenAI"]
         ),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "swift-genai"
+            name: "SwiftGenAI"
         ),
         .testTarget(
-            name: "swift-genaiTests",
-            dependencies: ["swift-genai"]
+            name: "SwiftGenAITests",
+            dependencies: ["SwiftGenAI"]
         ),
     ]
 )
+
