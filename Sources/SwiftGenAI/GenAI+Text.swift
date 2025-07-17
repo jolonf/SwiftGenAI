@@ -49,23 +49,6 @@ public extension GenAI {
         - config: Optional configuration for content generation.
      - Returns: The content generation response.
 
-     Example:
-     ```swift
-     let response = try await ai.generateContent(
-         model: "gemini-2.0-flash",
-         contents: [Content(parts: [.text("Why is the sky blue?")])],
-         config: GenerateContentConfig(candidateCount: 2)
-     )
-     print(response)
-    ```
-     
-     Alternatively you can use the convenience functions:
-     ```swift
-     let response = try await ai.generateContent(
-         model: "gemini-2.5-flash",
-         contents: "Why is the sky blue?"
-     )
-     print(response)
      */
     func generateContent(model: String, contents: [Content], config: GenerateContentConfig? = nil) async throws -> GenerateContentResponse {
         let body: GenerateContentParameters
@@ -101,5 +84,44 @@ public extension GenAI {
         let decoded = try JSONDecoder().decode(GenerateContentResponse.self, from: responseData)
 
         return decoded
+    }
+
+    // MARK: Stream versions
+    
+    func generateContentStream(model: String, content: String, config: GenerateContentConfig? = nil) -> AsyncThrowingStream<GenerateContentResponse, Error>{
+        return generateContentStream(model: model, contents: [Content(parts: [.text(content)])], config: config)
+    }
+    
+    /// Generates content using a streaming API, yielding each chunk as a `GenerateContentResponse`.
+    func generateContentStream(model: String, contents: [Content], config: GenerateContentConfig? = nil) -> AsyncThrowingStream<GenerateContentResponse, Error> {
+        return AsyncThrowingStream { continuation in
+            Task {
+                let (path, body) = await generateContentParametersToMldev(apiClient: apiClient, model: model, contents: contents, config: config)
+                // Serialize parameters to JSON
+                guard let jsonData = try? JSONEncoder().encode(body) else {
+                    continuation.finish(throwing: NSError(domain: "GenAI", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to encode parameters for streaming"]))
+                    return
+                }
+
+                let request = HttpRequest(
+                    path: "\(path):streamGenerateContent",
+                    httpMethod: .POST,
+                    body: jsonData
+                )
+
+                let stream = await apiClient.requestStream(request: request)
+                for try await chunk in stream {
+                    guard let data = chunk.body else { continue }
+                    do {
+                        let decoded = try JSONDecoder().decode(GenerateContentResponse.self, from: data)
+                        continuation.yield(decoded)
+                    } catch {
+                        continuation.finish(throwing: error)
+                        return
+                    }
+                }
+                continuation.finish()
+            }
+        }
     }
 }

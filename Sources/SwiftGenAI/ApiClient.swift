@@ -136,6 +136,107 @@ public actor ApiClient {
         requestInit = try await self.includeExtraHttpOptionsToRequestInit(requestInit, patchedHttpOptions)
         return try await self.unaryApiCall(url: url, request: requestInit, httpMethod: request.httpMethod.rawValue)
     }
+    
+    /// Makes a streaming HTTP request that can throw errors via the stream.
+    public func requestStream(request: HttpRequest) -> AsyncThrowingStream<HttpResponse, Error> {
+        return AsyncThrowingStream<HttpResponse, Error>(HttpResponse.self) { continuation in
+            Task {
+                do {
+                    var patchedHttpOptions = self.httpOptions ?? HttpOptions()
+                    if let reqOptions = request.httpOptions {
+                        patchedHttpOptions = Self.patchHttpOptions(base: patchedHttpOptions, patch: reqOptions)
+                    }
+                    let prependProjectLocation = self.shouldPrependVertexProjectPath(request: request)
+                    var url = self.constructUrl(path: request.path, options: patchedHttpOptions, prependProjectLocation: prependProjectLocation)
+                    // Ensure alt=sse
+                    if var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+                        var items = urlComponents.queryItems ?? []
+                        if !items.contains(where: { $0.name == "alt" && $0.value == "sse" }) {
+                            items.append(URLQueryItem(name: "alt", value: "sse"))
+                        }
+                        urlComponents.queryItems = items
+                        if let newUrl = urlComponents.url {
+                            url = newUrl
+                        }
+                    }
+                    var requestInit = URLRequest(url: url)
+                    requestInit.httpMethod = request.httpMethod.rawValue
+                    if request.httpMethod == .GET {
+                        if let body = request.body, !body.isEmpty {
+                            throw NSError(domain: "ApiClient", code: 400, userInfo: [NSLocalizedDescriptionKey: "Request body should be empty for GET request, but got non empty request body"])
+                        }
+                    } else {
+                        requestInit.httpBody = request.body
+                    }
+                    requestInit = try await self.includeExtraHttpOptionsToRequestInit(requestInit, patchedHttpOptions)
+                    // Streaming HTTP response using URLSession
+                    let (bytes, response) = try await URLSession.shared.bytes(for: requestInit)
+                    guard let httpResponse = response as? HTTPURLResponse else {
+                        throw NSError(domain: "ApiClient", code: -3, userInfo: [NSLocalizedDescriptionKey: "Did not receive HTTP response"])
+                    }
+                    if !(200...299).contains(httpResponse.statusCode) {
+                        throw NSError(domain: "ApiClient", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "HTTP error \(httpResponse.statusCode)"])
+                    }
+                    let headers: [(String, String)] = httpResponse.allHeaderFields.compactMap { key, value in
+                        guard let k = key as? String, let v = value as? String else { return nil }
+                        return (k, v)
+                    }
+                    var buffer = ""
+                    let decoder = String.Encoding.utf8
+                    for try await line in self.lineSequence(from: bytes) {
+                        buffer += line
+                        let trimmed = buffer.trimmingCharacters(in: .whitespacesAndNewlines)
+                        if trimmed.isEmpty { continue }
+                        // Remove SSE 'data: ' prefix for each line before decoding as JSON
+                        var jsonLine = trimmed
+                        if jsonLine.hasPrefix("data: ") {
+                            jsonLine = String(jsonLine.dropFirst(6))
+                        }
+                        do {
+                            if let data = jsonLine.data(using: decoder) {
+                                if let chunkJson = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any], let errorJson = chunkJson["error"] as? [String: Any], let code = errorJson["code"] as? Int, let status = errorJson["status"] as? String, code >= 400 && code < 600 {
+                                    let errorMessage = "got status: \(status). \(chunkJson)"
+                                    throw NSError(domain: "ApiClient", code: code, userInfo: [NSLocalizedDescriptionKey: errorMessage])
+                                }
+                            }
+                            let responseObj = HttpResponse(statusCode: httpResponse.statusCode, headers: Dictionary(uniqueKeysWithValues: headers), body: jsonLine.data(using: decoder) ?? Data())
+                            continuation.yield(responseObj)
+                            buffer = ""
+                        } catch {
+                            continuation.finish(throwing: error)
+                            return
+                        }
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+        }
+    }
+
+    // Helper to read the byte stream as lines (splitting on \n)
+    private func lineSequence(from bytes: URLSession.AsyncBytes) -> AsyncStream<String> {
+        AsyncStream { continuation in
+            Task {
+                var buffer = Data()
+                for try await chunk in bytes {
+                    buffer.append(chunk)
+                    while let range = buffer.range(of: Data([0x0A])) { // 0x0A == \n
+                        let lineData = buffer.subdata(in: buffer.startIndex..<range.lowerBound)
+                        if let line = String(data: lineData, encoding: .utf8) {
+                            continuation.yield(line)
+                        }
+                        buffer.removeSubrange(buffer.startIndex...range.lowerBound)
+                    }
+                }
+                if !buffer.isEmpty, let line = String(data: buffer, encoding: .utf8) {
+                    continuation.yield(line)
+                }
+                continuation.finish()
+            }
+        }
+    }
 
     // Updated implementation as requested
     private func shouldPrependVertexProjectPath(request: HttpRequest) -> Bool {
