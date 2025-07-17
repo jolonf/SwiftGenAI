@@ -32,4 +32,67 @@ struct GeminiLiveIntegrationTests {
             print("Live test response snippet: \(firstCandidate)")
         }
     }
+
+    @Test("generateContent works with thinking config", .enabled(if: hasGeminiApiKey()))
+    func liveIntegrationTest_thinkingConfig() async throws {
+        let apiKey = geminiApiKey()
+        let genAI = GenAI(apiKey: apiKey)
+        let config = GenerateContentConfig(thinkingConfig: ThinkingConfig(thinkingBudget: 0))
+        let response = try await genAI.generateContent(model: "gemini-2.5-flash", content: "How does AI work?", config: config)
+        let candidateCount = response.candidates?.count ?? 0
+        #expect(candidateCount > 0, "Expected at least one candidate in live thinking config response")
+        if let firstCandidate = response.candidates?.first {
+            print("Thinking config response snippet: \(firstCandidate)")
+        }
+    }
+
+    @Test("generateContent works with system instruction", .enabled(if: hasGeminiApiKey()))
+    func liveIntegrationTest_systemInstruction() async throws {
+        let apiKey = geminiApiKey()
+        let genAI = GenAI(apiKey: apiKey)
+        let systemInstruction = Content(parts: [.text("You are a cat. Your name is Neko.")])
+        let userContent = Content(parts: [.text("Hello there")])
+        let config = GenerateContentConfig(systemInstruction: systemInstruction)
+        let response = try await genAI.generateContent(model: "gemini-2.5-flash", contents: [userContent], config: config)
+        let candidateCount = response.candidates?.count ?? 0
+        #expect(candidateCount > 0, "Expected at least one candidate in live system instruction response")
+        if let firstCandidate = response.candidates?.first {
+            print("System instruction response snippet: \(firstCandidate)")
+        }
+    }
+
+    @Test("generateContent works with stopSequences, temperature, topP, topK", .enabled(if: hasGeminiApiKey()))
+    func liveIntegrationTest_stopSequencesAndConfig() async throws {
+        let apiKey = geminiApiKey()
+        let genAI = GenAI(apiKey: apiKey)
+        let config = GenerateContentConfig(
+            temperature: 1.0,
+            topP: 0.8,
+            topK: 10,
+            stopSequences: ["Title"]
+        )
+        let response = try await genAI.generateContent(model: "gemini-2.5-flash", content: "Explain how AI works", config: config)
+        let candidateCount = response.candidates?.count ?? 0
+        #expect(candidateCount > 0, "Expected at least one candidate in live stopSequences config response")
+        if let firstCandidate = response.candidates?.first {
+            print("StopSequences config response snippet: \(firstCandidate)")
+        }
+    }
+
+    @Test("generateContent works with multi-turn chat", .enabled(if: hasGeminiApiKey()))
+    func liveIntegrationTest_multiTurnChat() async throws {
+        let apiKey = geminiApiKey()
+        let genAI = GenAI(apiKey: apiKey)
+        let contents = [
+            Content(parts: [.text("Hello")], role: "user"),
+            Content(parts: [.text("Great to meet you. What would you like to know?")], role: "model"),
+            Content(parts: [.text("I have two dogs in my house. How many paws are in my house?")], role: "user")
+        ]
+        let response = try await genAI.generateContent(model: "gemini-2.5-flash", contents: contents)
+        let candidateCount = response.candidates?.count ?? 0
+        #expect(candidateCount > 0, "Expected at least one candidate in live multi-turn chat response")
+        if let firstCandidate = response.candidates?.first {
+            print("Multi-turn chat response snippet: \(firstCandidate)")
+        }
+    }
 }
