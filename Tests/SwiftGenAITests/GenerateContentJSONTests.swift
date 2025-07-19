@@ -233,4 +233,37 @@ struct GenerateContentJSONTests {
         #expect(generatedJsonObject == expectedJsonObject, "JSON does not match Gemini image generation example")
     }
     
+    @Test("Matches Gemini Google Search grounding example")
+    func matchesGoogleSearchGroundingExample() async throws {
+        let auth = WebAuth(apiKey: "dummy-key")
+        let apiClient = ApiClient(auth: auth)
+        let part = Part.text("Who won the euro 2024?")
+        let content = Content(parts: [part])
+        let contents = [content]
+        // According to the REST example, the tools array should contain an entry with {"google_search": {}}
+        // Assuming SwiftGenAI allows supplying tools via GenerateContentConfig.tools
+        let config = GenerateContentConfig(tools: [Tool(googleSearch: GoogleSearch())])
+
+        let (_, params) = await generateContentParametersToMldev(apiClient: apiClient, model: "gemini-2.5-flash", contents: contents, config: config)
+        let generatedJsonData = try JSONEncoder().encode(params)
+        let expectedJsonString = """
+        {
+          "contents": [
+            {
+              "parts": [
+                {"text": "Who won the euro 2024?"}
+              ]
+            }
+          ],
+          "tools": [
+            {"googleSearch": {}}
+          ]
+        }
+        """
+        let expectedJsonData = expectedJsonString.data(using: .utf8)!
+        let expectedJsonObject = try JSONSerialization.jsonObject(with: expectedJsonData) as! NSDictionary
+        let generatedJsonObject = try JSONSerialization.jsonObject(with: generatedJsonData) as! NSDictionary
+        #expect(generatedJsonObject == expectedJsonObject, "JSON does not match Gemini Google Search grounding example")
+    }
+
 }

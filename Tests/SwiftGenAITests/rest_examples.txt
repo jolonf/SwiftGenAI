@@ -138,3 +138,24 @@ curl -s -X POST
     }],
     "generationConfig":{"responseModalities":["TEXT","IMAGE"]}
   }'
+
+# Grounding with Google Search
+
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent" \
+  -H "x-goog-api-key: $GEMINI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -X POST \
+  -d '{
+    "contents": [
+      {
+        "parts": [
+          {"text": "Who won the euro 2024?"}
+        ]
+      }
+    ],
+    "tools": [
+      {
+        "google_search": {}
+      }
+    ]
+  }'
