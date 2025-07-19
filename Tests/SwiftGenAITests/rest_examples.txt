@@ -124,4 +124,17 @@ curl https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:ge
     ]
   }'
   
-  
+# Generate images using Gemini
+
+curl -s -X POST
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent" \
+  -H "x-goog-api-key: $GEMINI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "contents": [{
+      "parts": [
+        {"text": "Hi, can you create a 3d rendered image of a pig with wings and a top hat flying over a happy futuristic scifi city with lots of greenery?"}
+      ]
+    }],
+    "generationConfig":{"responseModalities":["TEXT","IMAGE"]}
+  }'

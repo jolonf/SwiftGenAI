@@ -203,4 +203,34 @@ struct GenerateContentJSONTests {
         let generatedJsonObject = try JSONSerialization.jsonObject(with: generatedJsonData) as! NSDictionary
         #expect(generatedJsonObject == expectedJsonObject, "JSON does not match Gemini multi-turn chat example")
     }
+    
+    @Test("Matches Gemini image generation config example")
+    func matchesImageGenerationExample() async throws {
+        let auth = WebAuth(apiKey: "dummy-key")
+        let apiClient = ApiClient(auth: auth)
+        let prompt = "Hi, can you create a 3d rendered image of a pig with wings and a top hat flying over a happy futuristic scifi city with lots of greenery?"
+        let part = Part.text(prompt)
+        let content = Content(parts: [part])
+        let contents = [content]
+        let config = GenerateContentConfig(
+            responseModalities: [.text, .image]
+        )
+        let (_, params) = await generateContentParametersToMldev(apiClient: apiClient, model: "gemini-2.0-flash-preview-image-generation", contents: contents, config: config)
+        let generatedJsonData = try JSONEncoder().encode(params)
+        let expectedJsonString = """
+        {
+          "contents": [{
+            "parts": [{
+              "text": "Hi, can you create a 3d rendered image of a pig with wings and a top hat flying over a happy futuristic scifi city with lots of greenery?"
+            }]
+          }],
+          "generationConfig": {"responseModalities": ["TEXT", "IMAGE"]}
+        }
+        """
+        let expectedJsonData = expectedJsonString.data(using: .utf8)!
+        let expectedJsonObject = try JSONSerialization.jsonObject(with: expectedJsonData) as! NSDictionary
+        let generatedJsonObject = try JSONSerialization.jsonObject(with: generatedJsonData) as! NSDictionary
+        #expect(generatedJsonObject == expectedJsonObject, "JSON does not match Gemini image generation example")
+    }
+    
 }
