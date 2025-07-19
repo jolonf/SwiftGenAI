@@ -118,6 +118,172 @@ public struct GenerateContentParameters: Encodable, Sendable {
 }
 
 
+/// Optional model configuration parameters for content generation.
+public struct GenerateContentConfig: Encodable, Sendable {
+    public let httpOptions: HttpOptions?
+    public let temperature: Double?
+    public let topP: Double?
+    public let topK: Int?
+    public let candidateCount: Int?
+    public let maxOutputTokens: Int?
+    public let stopSequences: [String]?
+    public let responseLogprobs: Bool?
+    public let logprobs: Int?
+    public let presencePenalty: Double?
+    public let frequencyPenalty: Double?
+    public let seed: Int?
+    public let responseMimeType: String?
+    public let responseSchema: Schema?
+    public let responseJsonSchema: Data? // Change type if you define more
+    public let routingConfig: GenerationConfigRoutingConfig?
+    public let modelSelectionConfig: ModelSelectionConfig?
+    public let labels: [String: String]?
+    public let responseModalities: [String]?
+    public let mediaResolution: MediaResolution?
+    public let speechConfig: SpeechConfig?
+    public let audioTimestamp: Bool?
+    public let automaticFunctionCalling: AutomaticFunctionCallingConfig?
+    public let thinkingConfig: ThinkingConfig?
+
+    // These members won't be encoded in this object, but stored in the parent
+    public let systemInstruction: Content?
+    public let safetySettings: [SafetySetting]?
+    public let tools: [Tool]?
+    public let toolConfig: ToolConfig?
+    public let cachedContent: String?
+    
+    private enum CodingKeys: String, CodingKey {
+        case httpOptions
+        case temperature
+        case topP
+        case topK
+        case candidateCount
+        case maxOutputTokens
+        case stopSequences
+        case responseLogprobs
+        case logprobs
+        case presencePenalty
+        case frequencyPenalty
+        case seed
+        case responseMimeType
+        case responseSchema
+        case responseJsonSchema
+        case responseModalities
+        case mediaResolution
+        case speechConfig
+        case automaticFunctionCalling
+        case thinkingConfig
+    }
+
+    public init(
+      httpOptions: HttpOptions? = nil,
+      temperature: Double? = nil,
+      topP: Double? = nil,
+      topK: Int? = nil,
+      candidateCount: Int? = nil,
+      maxOutputTokens: Int? = nil,
+      stopSequences: [String]? = nil,
+      responseLogprobs: Bool? = nil,
+      logprobs: Int? = nil,
+      presencePenalty: Double? = nil,
+      frequencyPenalty: Double? = nil,
+      seed: Int? = nil,
+      responseMimeType: String? = nil,
+      responseSchema: Schema? = nil,
+      responseJsonSchema: Data? = nil,
+      routingConfig: GenerationConfigRoutingConfig? = nil,
+      modelSelectionConfig: ModelSelectionConfig? = nil,
+      labels: [String: String]? = nil,
+      responseModalities: [String]? = nil,
+      mediaResolution: MediaResolution? = nil,
+      speechConfig: SpeechConfig? = nil,
+      audioTimestamp: Bool? = nil,
+      automaticFunctionCalling: AutomaticFunctionCallingConfig? = nil,
+      thinkingConfig: ThinkingConfig? = nil,
+      systemInstruction: Content? = nil,
+      safetySettings: [SafetySetting]? = nil,
+      tools: [Tool]? = nil,
+      toolConfig: ToolConfig? = nil,
+      cachedContent: String? = nil
+    ) {
+      self.httpOptions = httpOptions
+      self.temperature = temperature
+      self.topP = topP
+      self.topK = topK
+      self.candidateCount = candidateCount
+      self.maxOutputTokens = maxOutputTokens
+      self.stopSequences = stopSequences
+      self.responseLogprobs = responseLogprobs
+      self.logprobs = logprobs
+      self.presencePenalty = presencePenalty
+      self.frequencyPenalty = frequencyPenalty
+      self.seed = seed
+      self.responseMimeType = responseMimeType
+      self.responseSchema = responseSchema
+      self.responseJsonSchema = responseJsonSchema
+      self.routingConfig = routingConfig
+      self.modelSelectionConfig = modelSelectionConfig
+      self.labels = labels
+      self.responseModalities = responseModalities
+      self.mediaResolution = mediaResolution
+      self.speechConfig = speechConfig
+      self.audioTimestamp = audioTimestamp
+      self.automaticFunctionCalling = automaticFunctionCalling
+      self.thinkingConfig = thinkingConfig
+      self.systemInstruction = systemInstruction
+      self.safetySettings = safetySettings
+      self.tools = tools
+      self.toolConfig = toolConfig
+      self.cachedContent = cachedContent
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        if let httpOptions = httpOptions { try container.encode(httpOptions, forKey: .httpOptions) }
+        if let temperature = temperature { try container.encode(temperature, forKey: .temperature) }
+        if let topP = topP { try container.encode(topP, forKey: .topP) }
+        if let topK = topK { try container.encode(topK, forKey: .topK) }
+        if let candidateCount = candidateCount { try container.encode(candidateCount, forKey: .candidateCount) }
+        if let maxOutputTokens = maxOutputTokens { try container.encode(maxOutputTokens, forKey: .maxOutputTokens) }
+        if let stopSequences = stopSequences { try container.encode(stopSequences, forKey: .stopSequences) }
+        if let responseLogprobs = responseLogprobs { try container.encode(responseLogprobs, forKey: .responseLogprobs) }
+        if let logprobs = logprobs { try container.encode(logprobs, forKey: .logprobs) }
+        if let presencePenalty = presencePenalty { try container.encode(presencePenalty, forKey: .presencePenalty) }
+        if let frequencyPenalty = frequencyPenalty { try container.encode(frequencyPenalty, forKey: .frequencyPenalty) }
+        if let seed = seed { try container.encode(seed, forKey: .seed) }
+        if let responseMimeType = responseMimeType { try container.encode(responseMimeType, forKey: .responseMimeType) }
+        if let responseSchema = responseSchema { try container.encode(responseSchema, forKey: .responseSchema) }
+        if let responseJsonSchema = responseJsonSchema { try container.encode(responseJsonSchema, forKey: .responseJsonSchema) }
+        if let responseModalities = responseModalities { try container.encode(responseModalities, forKey: .responseModalities) }
+        if let mediaResolution = mediaResolution { try container.encode(mediaResolution, forKey: .mediaResolution) }
+        if let speechConfig = speechConfig { try container.encode(speechConfig, forKey: .speechConfig) }
+        if let automaticFunctionCalling = automaticFunctionCalling { try container.encode(automaticFunctionCalling, forKey: .automaticFunctionCalling) }
+        if let thinkingConfig = thinkingConfig { try container.encode(thinkingConfig, forKey: .thinkingConfig) }
+    }
+    
+    /// Checks if encoding this `GenerateContentConfig` instance results in any encoded data.
+    ///
+    /// This method attempts to encode the instance into JSON and decodes it back into a dictionary.
+    /// It then returns true if the resulting dictionary contains any key-value pairs, indicating
+    /// that there is at least some data encoded. Returns false if encoding or decoding fails or
+    /// if the encoded dictionary is empty.
+    public func encodesAnyValue() -> Bool {
+        do {
+            let encoder = JSONEncoder()
+            let data = try encoder.encode(self)
+            let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
+            if let dict = jsonObject as? [String: Any], !dict.isEmpty {
+                return true
+            } else {
+                return false
+            }
+        } catch {
+            return false
+        }
+    }
+}
+
+
 indirect public enum SchemaNode: Codable, Sendable {
     case schema(Schema)
 }
@@ -503,170 +669,6 @@ public struct SafetySetting: Codable, Sendable {
 }
 
 
-/// Optional model configuration parameters for content generation.
-public struct GenerateContentConfig: Encodable, Sendable {
-    public let httpOptions: HttpOptions?
-    public let temperature: Double?
-    public let topP: Double?
-    public let topK: Int?
-    public let candidateCount: Int?
-    public let maxOutputTokens: Int?
-    public let stopSequences: [String]?
-    public let responseLogprobs: Bool?
-    public let logprobs: Int?
-    public let presencePenalty: Double?
-    public let frequencyPenalty: Double?
-    public let seed: Int?
-    public let responseMimeType: String?
-    public let responseSchema: Schema?
-    public let responseJsonSchema: Data? // Change type if you define more
-    public let routingConfig: GenerationConfigRoutingConfig?
-    public let modelSelectionConfig: ModelSelectionConfig?
-    public let labels: [String: String]?
-    public let responseModalities: [String]?
-    public let mediaResolution: MediaResolution?
-    public let speechConfig: SpeechConfig?
-    public let audioTimestamp: Bool?
-    public let automaticFunctionCalling: AutomaticFunctionCallingConfig?
-    public let thinkingConfig: ThinkingConfig?
-
-    // These members won't be encoded in this object, but stored in the parent
-    public let systemInstruction: Content?
-    public let safetySettings: [SafetySetting]?
-    public let tools: [Tool]?
-    public let toolConfig: ToolConfig?
-    public let cachedContent: String?
-    
-    private enum CodingKeys: String, CodingKey {
-        case httpOptions
-        case temperature
-        case topP
-        case topK
-        case candidateCount
-        case maxOutputTokens
-        case stopSequences
-        case responseLogprobs
-        case logprobs
-        case presencePenalty
-        case frequencyPenalty
-        case seed
-        case responseMimeType
-        case responseSchema
-        case responseJsonSchema
-        case responseModalities
-        case mediaResolution
-        case speechConfig
-        case automaticFunctionCalling
-        case thinkingConfig
-    }
-
-    public init(
-      httpOptions: HttpOptions? = nil,
-      temperature: Double? = nil,
-      topP: Double? = nil,
-      topK: Int? = nil,
-      candidateCount: Int? = nil,
-      maxOutputTokens: Int? = nil,
-      stopSequences: [String]? = nil,
-      responseLogprobs: Bool? = nil,
-      logprobs: Int? = nil,
-      presencePenalty: Double? = nil,
-      frequencyPenalty: Double? = nil,
-      seed: Int? = nil,
-      responseMimeType: String? = nil,
-      responseSchema: Schema? = nil,
-      responseJsonSchema: Data? = nil,
-      routingConfig: GenerationConfigRoutingConfig? = nil,
-      modelSelectionConfig: ModelSelectionConfig? = nil,
-      labels: [String: String]? = nil,
-      responseModalities: [String]? = nil,
-      mediaResolution: MediaResolution? = nil,
-      speechConfig: SpeechConfig? = nil,
-      audioTimestamp: Bool? = nil,
-      automaticFunctionCalling: AutomaticFunctionCallingConfig? = nil,
-      thinkingConfig: ThinkingConfig? = nil,
-      systemInstruction: Content? = nil,
-      safetySettings: [SafetySetting]? = nil,
-      tools: [Tool]? = nil,
-      toolConfig: ToolConfig? = nil,
-      cachedContent: String? = nil
-    ) {
-      self.httpOptions = httpOptions
-      self.temperature = temperature
-      self.topP = topP
-      self.topK = topK
-      self.candidateCount = candidateCount
-      self.maxOutputTokens = maxOutputTokens
-      self.stopSequences = stopSequences
-      self.responseLogprobs = responseLogprobs
-      self.logprobs = logprobs
-      self.presencePenalty = presencePenalty
-      self.frequencyPenalty = frequencyPenalty
-      self.seed = seed
-      self.responseMimeType = responseMimeType
-      self.responseSchema = responseSchema
-      self.responseJsonSchema = responseJsonSchema
-      self.routingConfig = routingConfig
-      self.modelSelectionConfig = modelSelectionConfig
-      self.labels = labels
-      self.responseModalities = responseModalities
-      self.mediaResolution = mediaResolution
-      self.speechConfig = speechConfig
-      self.audioTimestamp = audioTimestamp
-      self.automaticFunctionCalling = automaticFunctionCalling
-      self.thinkingConfig = thinkingConfig
-      self.systemInstruction = systemInstruction
-      self.safetySettings = safetySettings
-      self.tools = tools
-      self.toolConfig = toolConfig
-      self.cachedContent = cachedContent
-    }
-    
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        if let httpOptions = httpOptions { try container.encode(httpOptions, forKey: .httpOptions) }
-        if let temperature = temperature { try container.encode(temperature, forKey: .temperature) }
-        if let topP = topP { try container.encode(topP, forKey: .topP) }
-        if let topK = topK { try container.encode(topK, forKey: .topK) }
-        if let candidateCount = candidateCount { try container.encode(candidateCount, forKey: .candidateCount) }
-        if let maxOutputTokens = maxOutputTokens { try container.encode(maxOutputTokens, forKey: .maxOutputTokens) }
-        if let stopSequences = stopSequences { try container.encode(stopSequences, forKey: .stopSequences) }
-        if let responseLogprobs = responseLogprobs { try container.encode(responseLogprobs, forKey: .responseLogprobs) }
-        if let logprobs = logprobs { try container.encode(logprobs, forKey: .logprobs) }
-        if let presencePenalty = presencePenalty { try container.encode(presencePenalty, forKey: .presencePenalty) }
-        if let frequencyPenalty = frequencyPenalty { try container.encode(frequencyPenalty, forKey: .frequencyPenalty) }
-        if let seed = seed { try container.encode(seed, forKey: .seed) }
-        if let responseMimeType = responseMimeType { try container.encode(responseMimeType, forKey: .responseMimeType) }
-        if let responseSchema = responseSchema { try container.encode(responseSchema, forKey: .responseSchema) }
-        if let responseJsonSchema = responseJsonSchema { try container.encode(responseJsonSchema, forKey: .responseJsonSchema) }
-        if let responseModalities = responseModalities { try container.encode(responseModalities, forKey: .responseModalities) }
-        if let mediaResolution = mediaResolution { try container.encode(mediaResolution, forKey: .mediaResolution) }
-        if let speechConfig = speechConfig { try container.encode(speechConfig, forKey: .speechConfig) }
-        if let automaticFunctionCalling = automaticFunctionCalling { try container.encode(automaticFunctionCalling, forKey: .automaticFunctionCalling) }
-        if let thinkingConfig = thinkingConfig { try container.encode(thinkingConfig, forKey: .thinkingConfig) }
-    }
-    
-    /// Checks if encoding this `GenerateContentConfig` instance results in any encoded data.
-    ///
-    /// This method attempts to encode the instance into JSON and decodes it back into a dictionary.
-    /// It then returns true if the resulting dictionary contains any key-value pairs, indicating
-    /// that there is at least some data encoded. Returns false if encoding or decoding fails or
-    /// if the encoded dictionary is empty.
-    public func encodesAnyValue() -> Bool {
-        do {
-            let encoder = JSONEncoder()
-            let data = try encoder.encode(self)
-            let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
-            if let dict = jsonObject as? [String: Any], !dict.isEmpty {
-                return true
-            } else {
-                return false
-            }
-        } catch {
-            return false
-        }
-    }
-}
 
 /// The media resolution to use.
 public enum MediaResolution: String, Codable, Sendable {

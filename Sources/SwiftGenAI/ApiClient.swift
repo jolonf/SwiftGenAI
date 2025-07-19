@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 /// Default API versions
 private let VERTEX_AI_API_DEFAULT_VERSION = "v1beta1"
 private let GOOGLE_AI_API_DEFAULT_VERSION = "v1beta"
@@ -29,7 +28,7 @@ public actor ApiClient {
     public private(set) var httpOptions: HttpOptions?
     public private(set) var userAgentExtra: String?
 
-    private static func baseUrlFromProjectLocation(location: String?) -> String {
+    public static func baseUrlFromProjectLocation(location: String? = nil) -> String {
         if let location = location, !location.isEmpty, location.lowercased() != "global" {
             return "https://\(location)-aiplatform.googleapis.com/"
         } else {
