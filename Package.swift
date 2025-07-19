@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "swift-genai",
+    name: "SwiftGenAI",
     platforms: [
         .macOS(.v12),
         .iOS(.v13),

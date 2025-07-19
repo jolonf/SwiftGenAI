@@ -138,7 +138,7 @@ public struct GenerateContentConfig: Encodable, Sendable {
     public let routingConfig: GenerationConfigRoutingConfig?
     public let modelSelectionConfig: ModelSelectionConfig?
     public let labels: [String: String]?
-    public let responseModalities: [String]?
+    public let responseModalities: [Modality]?
     public let mediaResolution: MediaResolution?
     public let speechConfig: SpeechConfig?
     public let audioTimestamp: Bool?
@@ -194,7 +194,7 @@ public struct GenerateContentConfig: Encodable, Sendable {
       routingConfig: GenerationConfigRoutingConfig? = nil,
       modelSelectionConfig: ModelSelectionConfig? = nil,
       labels: [String: String]? = nil,
-      responseModalities: [String]? = nil,
+      responseModalities: [Modality]? = nil,
       mediaResolution: MediaResolution? = nil,
       speechConfig: SpeechConfig? = nil,
       audioTimestamp: Bool? = nil,
@@ -1251,6 +1251,18 @@ public enum MediaModality: String, Codable, Sendable {
     case audio = "AUDIO"
     /** Document, e.g. PDF. */
     case document = "DOCUMENT"
+}
+
+/// Server content modalities.
+public enum Modality: String, Codable, Sendable {
+    /// The modality is unspecified.
+    case unspecified = "MODALITY_UNSPECIFIED"
+    /// Indicates the model should return text
+    case text = "TEXT"
+    /// Indicates the model should return images.
+    case image = "IMAGE"
+    /// Indicates the model should return audio.
+    case audio = "AUDIO"
 }
 
 /// Represents token counting info for a single modality.
