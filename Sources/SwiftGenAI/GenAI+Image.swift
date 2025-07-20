@@ -17,31 +17,29 @@ public let DEFAULT_IMAGE_MODEL = "imagen-4.0-generate-preview-06-06"
 
 public extension GenAI {
 
-    /**
-     Makes an API request to generate content using the specified model.
-
-     The `model` parameter supports the following formats for different APIs:
-
-     - For Vertex AI API (note Vertex is currently not supported):
-       - Gemini model ID (e.g., "gemini-2.0-flash")
-       - Full resource name, starting with "projects/" (e.g., "projects/my-project-id/locations/us-central1/publishers/google/models/gemini-2.0-flash")
-       - Partial resource name with "publishers/" (e.g., "publishers/google/models/gemini-2.0-flash" or "publishers/meta/models/llama-3.1-405b-instruct-maas")
-       - Publisher and model name separated by "/" (e.g., "google/gemini-2.0-flash" or "meta/llama-3.1-405b-instruct-maas")
-
-     - For Gemini API:
-       - Gemini model ID (e.g., "gemini-2.0-flash")
-       - Model name starting with "models/" (e.g., "models/gemini-2.0-flash")
-       - Tuned model name starting with "tunedModels/" (e.g., "tunedModels/1234567890123456789")
-
-     Some models support multimodal input and output.
-
-     - Parameters:
-        - model: The model identifier or resource string.
-        - contents: The list of content parts for the request.
-        - config: Optional configuration for content generation.
-     - Returns: The content generation response.
-
-     */
+    /// Generates images from a text prompt using the specified model and configuration.
+    ///
+    /// - Parameters:
+    ///   - model: The name of the image generation model to use. Defaults to `imagen-4.0-generate-preview-06-06`.
+    ///   - prompt: The text description for the image to generate.
+    ///   - config: Optional configuration for image generation.
+    /// - Returns: The response containing generated image data and metadata.
+    /// - Throws: An error if image generation fails or is unsupported by the API client.
+    ///
+    /// Example:
+    /// ```swift
+    /// let response = try await genAI.generateImages(
+    ///     model: "imagen-4.0-generate-preview-06-06",
+    ///     prompt: "Robot holding a red skateboard",
+    ///     config: GenerateImagesConfig(
+    ///         numberOfImages: 1,
+    ///         includeRaiReason: true
+    ///     )
+    /// )
+    /// if let imageData = response.generatedImages?.first?.image?.imageBytes {
+    ///     print(imageData)
+    /// }
+    /// ```
     func generateImages(model: String = DEFAULT_IMAGE_MODEL, prompt: String, config: GenerateImagesConfig? = nil) async throws -> GenerateImagesResponse {
         let body: GenerateImagesParameters
         let path: String
