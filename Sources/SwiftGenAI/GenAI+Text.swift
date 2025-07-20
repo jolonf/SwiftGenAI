@@ -6,23 +6,23 @@ import Foundation
 //  Created by Jolon on 13/7/2025.
 //
 
-public let DEFAULT_MODEL = "gemini-2.5-flash"
+public let DEFAULT_CONTENT_MODEL = "gemini-2.5-flash"
 
 public extension GenAI {
 
-    func generateContent(model: String = DEFAULT_MODEL, content: String, config: GenerateContentConfig? = nil) async throws -> GenerateContentResponse {
+    func generateContent(model: String = DEFAULT_CONTENT_MODEL, content: String, config: GenerateContentConfig? = nil) async throws -> GenerateContentResponse {
         return try await generateContent(model: model, contents: [Content(parts: [.text(content)])], config: config)
     }
 
-    func generateContent(model: String = DEFAULT_MODEL, content: Content, config: GenerateContentConfig? = nil) async throws -> GenerateContentResponse {
+    func generateContent(model: String = DEFAULT_CONTENT_MODEL, content: Content, config: GenerateContentConfig? = nil) async throws -> GenerateContentResponse {
         return try await generateContent(model: model, contents: [content], config: config)
     }
 
-    func generateContent(model: String = DEFAULT_MODEL, part: Part, config: GenerateContentConfig? = nil) async throws -> GenerateContentResponse {
+    func generateContent(model: String = DEFAULT_CONTENT_MODEL, part: Part, config: GenerateContentConfig? = nil) async throws -> GenerateContentResponse {
         return try await generateContent(model: model, contents: [Content(parts: [part])], config: config)
     }
 
-    func generateContent(model: String = DEFAULT_MODEL, parts: [Part], config: GenerateContentConfig? = nil) async throws -> GenerateContentResponse {
+    func generateContent(model: String = DEFAULT_CONTENT_MODEL, parts: [Part], config: GenerateContentConfig? = nil) async throws -> GenerateContentResponse {
         return try await generateContent(model: model, contents: [Content(parts: parts)], config: config)
     }
 
@@ -51,7 +51,7 @@ public extension GenAI {
      - Returns: The content generation response.
 
      */
-    func generateContent(model: String = DEFAULT_MODEL, contents: [Content], config: GenerateContentConfig? = nil) async throws -> GenerateContentResponse {
+    func generateContent(model: String = DEFAULT_CONTENT_MODEL, contents: [Content], config: GenerateContentConfig? = nil) async throws -> GenerateContentResponse {
         let body: GenerateContentParameters
         let path: String
 
@@ -89,12 +89,12 @@ public extension GenAI {
 
     // MARK: Stream versions
     
-    func generateContentStream(model: String = DEFAULT_MODEL, content: String, config: GenerateContentConfig? = nil) -> AsyncThrowingStream<GenerateContentResponse, Error>{
+    func generateContentStream(model: String = DEFAULT_CONTENT_MODEL, content: String, config: GenerateContentConfig? = nil) -> AsyncThrowingStream<GenerateContentResponse, Error>{
         return generateContentStream(model: model, contents: [Content(parts: [.text(content)])], config: config)
     }
     
     /// Generates content using a streaming API, yielding each chunk as a `GenerateContentResponse`.
-    func generateContentStream(model: String = DEFAULT_MODEL, contents: [Content], config: GenerateContentConfig? = nil) -> AsyncThrowingStream<GenerateContentResponse, Error> {
+    func generateContentStream(model: String = DEFAULT_CONTENT_MODEL, contents: [Content], config: GenerateContentConfig? = nil) -> AsyncThrowingStream<GenerateContentResponse, Error> {
         return AsyncThrowingStream { continuation in
             Task {
                 let (path, body) = await generateContentParametersToMldev(apiClient: apiClient, model: model, contents: contents, config: config)

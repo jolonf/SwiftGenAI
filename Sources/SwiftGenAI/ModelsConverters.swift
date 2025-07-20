@@ -7,9 +7,6 @@
 
 import Foundation
 
-
-// MARK: This file uses the encodesAnyValue pattern for optional config encoding.
-
 // Generates parameters for Mldev API requests, including model, contents, and optional config.
 public func generateContentParametersToMldev(apiClient: ApiClient, model: String, contents: [Content], config: GenerateContentConfig?) async -> (String, GenerateContentParameters) {
     
@@ -30,5 +27,17 @@ public func generateContentParametersToMldev(apiClient: ApiClient, model: String
     let path = await tModel(apiClient: apiClient, model: model)
     
     return (path, generateContentParameters)
+}
+
+// Generates parameters for Mldev API requests, including model, contents, and optional config.
+public func generateImagesParametersToMldev(apiClient: ApiClient, model: String, prompt: String, config: GenerateImagesConfig? = nil) async -> (String, GenerateImagesParameters) {
+    let generateImagesParameters = GenerateImagesParameters(
+        instances: [ImageInstance(prompt: prompt)],
+        parameters: config
+    )
+    
+    let path = await tModel(apiClient: apiClient, model: model)
+    
+    return (path, generateImagesParameters)
 }
 

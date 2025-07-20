@@ -1,0 +1,17 @@
+
+# Generate images using the Imagen models
+
+curl -X POST \
+    "https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-preview-06-06:predict" \
+    -H "x-goog-api-key: $GEMINI_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{
+        "instances": [
+          {
+            "prompt": "Robot holding a red skateboard"
+          }
+        ],
+        "parameters": {
+          "sampleCount": 4
+        }
+      }'
