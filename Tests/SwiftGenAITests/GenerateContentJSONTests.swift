@@ -266,4 +266,39 @@ struct GenerateContentJSONTests {
         #expect(generatedJsonObject == expectedJsonObject, "JSON does not match Gemini Google Search grounding example")
     }
 
+    @Test("Matches Gemini inline image data example")
+    func matchesInlineImageDataExample() async throws {
+        let auth = WebAuth(apiKey: "dummy-key")
+        let apiClient = ApiClient(auth: auth)
+        // Use a small, fixed byte array as fake image data
+        let imageData = Data([0xFF, 0xD8, 0xFF, 0xDB, 0x00, 0x43, 0x00]) // Not a full JPEG, just a stub
+        let blob = Blob(displayName: nil, data: imageData, mimeType: "image/jpeg")
+
+        let imagePart = Part.inlineData(blob)
+        let textPart = Part.text("Caption this image.")
+        let content = Content(parts: [imagePart, textPart])
+        let contents = [content]
+
+        let (_, params) = await generateContentParametersToMldev(apiClient: apiClient, model: "gemini-2.5-flash", contents: contents, config: nil)
+        let generatedJsonData = try JSONEncoder().encode(params)
+
+        // The base64 encoding of the 7 bytes given above:
+        let base64String = imageData.base64EncodedString()
+        let expectedJsonString = """
+        {
+            "contents": [{
+                "parts": [
+                    {"inlineData": {"mimeType": "image/jpeg", "data": "\(base64String)"}},
+                    {"text": "Caption this image."}
+                ]
+            }]
+        }
+        """
+        let expectedJsonData = expectedJsonString.data(using: .utf8)!
+        let expectedJsonObject = try JSONSerialization.jsonObject(with: expectedJsonData) as! NSDictionary
+        let generatedJsonObject = try JSONSerialization.jsonObject(with: generatedJsonData) as! NSDictionary
+        #expect(generatedJsonObject == expectedJsonObject, "JSON does not match Gemini inline image data example")
+    }
+    
+    
 }

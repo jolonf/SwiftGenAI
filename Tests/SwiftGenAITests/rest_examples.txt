@@ -159,3 +159,25 @@ curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:g
       }
     ]
   }'
+
+# Passing inline image data
+
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent" \
+-H "x-goog-api-key: $GEMINI_API_KEY" \
+-H 'Content-Type: application/json' \
+-X POST \
+-d '{
+    "contents": [{
+    "parts":[
+        {
+            "inline_data": {
+            "mime_type":"image/jpeg",
+            "data": "'"$(base64 $B64FLAGS $IMG_PATH)"'"
+            }
+        },
+        {"text": "Caption this image."},
+    ]
+    }]
+}'
+
+
