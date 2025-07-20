@@ -17,22 +17,6 @@ public let DEFAULT_IMAGE_MODEL = "imagen-4.0-generate-preview-06-06"
 
 public extension GenAI {
 
-    func generateImages(model: String = DEFAULT_IMAGE_MODEL, content: String, config: GenerateContentConfig? = nil) async throws -> GenerateContentResponse {
-        return try await generateContent(model: model, contents: [Content(parts: [.text(content)])], config: config)
-    }
-
-    func generateImages(model: String = DEFAULT_IMAGE_MODEL, content: Content, config: GenerateContentConfig? = nil) async throws -> GenerateContentResponse {
-        return try await generateContent(model: model, contents: [content], config: config)
-    }
-
-    func generateImages(model: String = DEFAULT_IMAGE_MODEL, part: Part, config: GenerateContentConfig? = nil) async throws -> GenerateContentResponse {
-        return try await generateContent(model: model, contents: [Content(parts: [part])], config: config)
-    }
-
-    func generateImages(model: String = DEFAULT_IMAGE_MODEL, parts: [Part], config: GenerateContentConfig? = nil) async throws -> GenerateContentResponse {
-        return try await generateContent(model: model, contents: [Content(parts: parts)], config: config)
-    }
-
     /**
      Makes an API request to generate content using the specified model.
 
