@@ -1,6 +1,6 @@
 //
 //  GenAI.swift
-//  swift-genai
+//  SwiftGenAI
 //
 //  Created by Jolon on 13/7/2025.
 //
@@ -23,11 +23,13 @@ enum GenAIError: Error, LocalizedError {
 ///
 /// Initialise the SDK for using the Gemini API:
 /// ```
-/// import swift-genai
+/// import SwiftGenAI
 ///
 /// let ai = GenAI(apiKey: "GEMINI_API_KEY")
-/// let response = await ai.generateContent()
+/// let response = await ai.generateContent(content: "Prompt")
 /// ```
+///
+/// See GenAI+Text.swift and GenAI+Image.swift for functions to generate text and images.
 ///
 public actor GenAI {
     

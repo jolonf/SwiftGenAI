@@ -8,6 +8,8 @@
 import Foundation
 
 /// Returns the fully-qualified model name for the given API client and model string.
+/// We don't support Vertex yet so this function has very little utility, also by checking the apiClient for vertex
+/// it forces this function to be async.
 public func tModel(apiClient: ApiClient, model: String) async -> String {
     if await apiClient.vertexai {
         if model.hasPrefix("publishers/") || model.hasPrefix("projects/") || model.hasPrefix("models/") {

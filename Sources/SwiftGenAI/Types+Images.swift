@@ -48,7 +48,6 @@ public struct GenerateImagesResponse: Codable, Sendable {
     }
 }
 
-
 /// This object will be sent in the Http Request
 public struct GenerateImagesParameters: Encodable, Sendable {
     // Contains prompt

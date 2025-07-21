@@ -6,12 +6,6 @@
 //
 
 import Foundation
-//
-//  GenAI+Text.swift
-//  swift-genai
-//
-//  Created by Jolon on 13/7/2025.
-//
 
 public let DEFAULT_IMAGE_MODEL = "imagen-4.0-generate-preview-06-06"
 
@@ -36,9 +30,7 @@ public extension GenAI {
     ///         includeRaiReason: true
     ///     )
     /// )
-    /// if let imageData = response.generatedImages?.first?.image?.imageBytes {
-    ///     print(imageData)
-    /// }
+    /// let imageData = response.predictions?.first?.bytesBase64Encoded
     /// ```
     func generateImages(model: String = DEFAULT_IMAGE_MODEL, prompt: String, config: GenerateImagesConfig? = nil) async throws -> GenerateImagesResponse {
         let body: GenerateImagesParameters

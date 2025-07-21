@@ -1,6 +1,6 @@
 //
 //  Auth.swift
-//  swift-genai
+//  SwiftGenAI
 //
 //  Created by Jolon on 13/7/2025.
 //

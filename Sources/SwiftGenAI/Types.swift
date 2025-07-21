@@ -1,9 +1,12 @@
 // Types.swift
 // Common parameter and config types for GenAI
+//
+// This file is very large and was created by mostly converting the JS equivalents one by one using ChatGPT.
+// The order in the file could be improved and perhaps split into smaller files. Additionally some of the
+// structs lack inits, which should be added.
+
 
 import Foundation
-
-
 
 public struct Content: Codable, Sendable {
     public var parts: [Part]

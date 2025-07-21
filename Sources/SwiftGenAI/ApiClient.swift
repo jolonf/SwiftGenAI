@@ -1,6 +1,6 @@
 //
 //  ApiClient.swift
-//  swift-genai
+//  SwiftGenAI
 //
 //  Created by Jolon on 13/7/2025.
 //
@@ -11,7 +11,7 @@ import Foundation
 private let VERTEX_AI_API_DEFAULT_VERSION = "v1beta1"
 private let GOOGLE_AI_API_DEFAULT_VERSION = "v1beta"
 
-private let LIBRARY_LABEL = "swift-genai/0.1.0"
+private let LIBRARY_LABEL = "SwiftGenAI/0.1.0"
 private let USER_AGENT_HEADER = "User-Agent"
 private let GOOGLE_API_CLIENT_HEADER = "x-goog-api-client"
 private let CONTENT_TYPE_HEADER = "Content-Type"
@@ -237,7 +237,6 @@ public actor ApiClient {
         }
     }
 
-    // Updated implementation as requested
     private func shouldPrependVertexProjectPath(request: HttpRequest) -> Bool {
         if self.apiKey != nil {
             return false
