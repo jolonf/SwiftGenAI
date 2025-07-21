@@ -65,15 +65,31 @@ public extension GenAI {
             throw NSError(domain: "GenAI", code: -1, userInfo: [NSLocalizedDescriptionKey: "Empty response body"])
         }
         
-        if let jsonObject = try? JSONSerialization.jsonObject(with: responseData),
-           let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted),
-           let jsonString = String(data: prettyData, encoding: .utf8) {
-            print(jsonString)
+        if let jsonObject = try? JSONSerialization.jsonObject(with: responseData) {
+            let truncatedJSONObject = truncateLongStringsInJSONObject(jsonObject)
+            if let prettyData = try? JSONSerialization.data(withJSONObject: truncatedJSONObject, options: .prettyPrinted),
+               let jsonString = String(data: prettyData, encoding: .utf8) {
+                print(jsonString)
+            }
         }
 
         let decoded = try JSONDecoder().decode(GenerateImagesResponse.self, from: responseData)
 
         return decoded
+    }
+
+    private func truncateLongStringsInJSONObject(_ object: Any, maxLength: Int = 100) -> Any {
+        switch object {
+        case let dict as [String: Any]:
+            return dict.mapValues { truncateLongStringsInJSONObject($0, maxLength: maxLength) }
+        case let array as [Any]:
+            return array.map { truncateLongStringsInJSONObject($0, maxLength: maxLength) }
+        case let string as String where string.count > maxLength:
+            let prefix = string.prefix(maxLength)
+            return "\(prefix)... [\(string.count) chars truncated]"
+        default:
+            return object
+        }
     }
 
 }

@@ -5,22 +5,7 @@
 //  Created by Jolon on 20/7/2025.
 //
 
-
-/// An image, either from Cloud Storage or as bytes.
-public struct Image: Codable, Sendable {
-    /// The Cloud Storage URI of the image. `Image` can contain a value for this field or the `imageBytes` field but not both.
-    public let gcsUri: String?
-    /// The image bytes data, encoded as a base64 string. `Image` can contain a value for this field or the `gcsUri` field but not both.
-    public let imageBytes: String?
-    /// The MIME type of the image.
-    public let mimeType: String?
-    
-    public init(gcsUri: String? = nil, imageBytes: String? = nil, mimeType: String? = nil) {
-        self.gcsUri = gcsUri
-        self.imageBytes = imageBytes
-        self.mimeType = mimeType
-    }
-}
+import Foundation
 
 /// Safety attributes of a GeneratedImage or the user-provided prompt.
 public struct SafetyAttributes: Codable, Sendable {
@@ -38,34 +23,27 @@ public struct SafetyAttributes: Codable, Sendable {
     }
 }
 
-/// An output image.
+/// An output image. This is very different to GeneratedImage in the JS GenAI SDK as the actual API returns a different object.
 public struct GeneratedImage: Codable, Sendable {
-    /// The output image data.
-    public let image: Image?
-    /// Responsible AI filter reason if the image is filtered out of the response.
-    public let raiFilteredReason: String?
-    /// Safety attributes of the image. Lists of RAI categories and their scores of each content.
-    public let safetyAttributes: SafetyAttributes?
-    /// The rewritten prompt used for image generation if the prompt enhancer is enabled.
-    public let enhancedPrompt: String?
     
-    public init(image: Image? = nil, raiFilteredReason: String? = nil, safetyAttributes: SafetyAttributes? = nil, enhancedPrompt: String? = nil) {
-        self.image = image
-        self.raiFilteredReason = raiFilteredReason
-        self.safetyAttributes = safetyAttributes
-        self.enhancedPrompt = enhancedPrompt
+    public let mimeType: String?
+    public let bytesBase64Encoded: Data?
+    
+    public init(mimeType: String? = nil, bytesBase64Encoded: Data? = nil) {
+        self.mimeType = mimeType
+        self.bytesBase64Encoded = bytesBase64Encoded
     }
 }
 
 /// The output images response.
 public struct GenerateImagesResponse: Codable, Sendable {
-    /// List of generated images.
-    public let generatedImages: [GeneratedImage]?
+    /// List of generated images - the API docs and JS SDK call this generatedImages, but the API returns predictions
+    public let predictions: [GeneratedImage]?
     /// Safety attributes of the positive prompt. Only populated if `includeSafetyAttributes` is set to true.
     public let positivePromptSafetyAttributes: SafetyAttributes?
     
-    public init(generatedImages: [GeneratedImage]? = nil, positivePromptSafetyAttributes: SafetyAttributes? = nil) {
-        self.generatedImages = generatedImages
+    public init(predictions: [GeneratedImage]? = nil, positivePromptSafetyAttributes: SafetyAttributes? = nil) {
+        self.predictions = predictions
         self.positivePromptSafetyAttributes = positivePromptSafetyAttributes
     }
 }
@@ -195,3 +173,4 @@ public enum ImagePromptLanguage: String, Codable, Sendable {
     /// Spanish
     case es = "es"
 }
+
