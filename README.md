@@ -42,7 +42,10 @@ if let candidates = response.candidates {
 import SwiftGenAI
 
 let ai = GenAI(apiKey: "GEMINI_API_KEY")
-let response = try await ai.generateContent(content: "Prompt", config: GenerateContentConfig(tools: [Tool(googleSearch: GoogleSearch())]))
+let config = GenerateContentConfig(tools: [
+    Tool(googleSearch: GoogleSearch())
+])
+let response = try await ai.generateContent(content: "Prompt", config: config)
 ...
 ```
 
